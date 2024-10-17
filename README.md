@@ -83,6 +83,8 @@ Contributions are welcome! If you would like to add new models or improve the ex
 * __Metric Enrichment__: Introduce further evaluation metrics, such as F1 score and confusion matrix, for a more comprehensive assessment.
 * __Dataset Optimization__: Explore techniques to reduce the dataset size while preserving its diversity, thereby improving computational efficiency.
 * __User Experience Enhancement__: Enhance the user-friendliness of the main program for easier operation and accessibility.
+* __Platform Testing__: Extend testing to include more platforms, such as high-end PCs and resource-constrained devices like Raspberry Pi, to understand the models' performance in various environments.
+* __Hardware Resource Monitoring__: Evaluate the usage of hardware resources (RAM, GPU, processor) for each model to provide insights into their computational efficiency and suitability for different devices
 
 ## References
 This codebase is built upon the initial work from the following repository:
