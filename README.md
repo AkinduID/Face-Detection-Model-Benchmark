@@ -31,8 +31,7 @@ The models are evaluated based on the following metrics:
 
 * __Average Inference Time__: The time taken for each model to process an image and output results, crucial for determining suitability for real-time applications.
 
-## Usage
-### Installation
+## Installation
 To set up the environment and run the code, follow these steps:
 Clone the repository
 ```bash
@@ -57,11 +56,16 @@ To evaluate the models, run the following command
 ```bash
 python main.py
 ```
-### Results
+## Results
 The results of the face detection model comparison are stored in the *results* folder. The key findings are summarized in the following comparison graphs generated using Matplotlib
 * Average IoU vs Model
 * Average Inference Time vs Model
 * Average Mean Precision vs Model
+<div class="image-container">
+  <img src="https://github.com/AkinduID/Face-Detection-Model-Benchmark/blob/main/results/Average%20IOU_comparison_plot.png" width="300" alt="Avg IoU" />
+  <img src="https://github.com/AkinduID/Face-Detection-Model-Benchmark/blob/main/results/Average%20inference%20time_comparison_plot.png" width="300" alt="Avg Inference Time" />
+  <img src="https://github.com/AkinduID/Face-Detection-Model-Benchmark/blob/main/results/Mean%20Average%20Precision_comparison_plot.png" width="300" alt="Mean Avg Precision" />
+</div>
 
 Current result are achieved on a laptop with the follwing specifications:
 * Processor - Intel i5-1135G7
