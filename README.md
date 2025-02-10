@@ -1,4 +1,8 @@
 # Comparative Analysis of Lightweight Face Detection Models for Edge Devices
+<a href="https://www.python.org/"><img src="https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white"/></a>
+<a href="https://opencv.org/"><img src="https://img.shields.io/badge/OpenCV-5C3EE8?style=flat&logo=opencv&logoColor=white"/></a>
+<a href="https://mediapipe.dev/"><img src="https://img.shields.io/badge/MediaPipe-2196F3?style=flat&logo=google&logoColor=white"/></a>
+<a href="https://matplotlib.org/"><img src="https://img.shields.io/badge/Matplotlib-11557C?style=flat&logo=python&logoColor=white"/></a>
 
 This repository contains the codebase and documentation for a comparative analysis of various lightweight face detection models optimized for real-time detection on edge devices. The study evaluates the models based on their accuracy, speed, and performance across different poses and environments, using the WIDER FACE dataset.
 
