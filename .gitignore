@@ -1,2 +1,4 @@
 * .jpg
 /dataset/WIDER_val
+venv
+__pycache__
