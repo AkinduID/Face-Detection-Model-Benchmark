@@ -7,7 +7,13 @@ import matplotlib.pyplot as plt
 # Add the parent directory to the Python path to import the face detection modules
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from face_detector import *
+from face_detector import (
+    OpenCVHaarFaceDetector,
+    MediaPipeBlazeFaceDetector,
+    MediaPipeHolisticDetector,
+    TensorFlowMobilNetSSDFaceDetector,
+    YOLOFaceDetector
+)
 from main import extract_and_filter_data, evaluate
 
 CHART_LABEL_ROTATION = 35
@@ -16,13 +22,23 @@ CHART_LABEL_ALIGNMENT = 'right'
 # Initialize face detectors
 @st.cache_resource
 def initialize_detectors():
-    return {
-        'Haar Cascades': OpenCVHaarFaceDetector(scaleFactor=1.3, minNeighbors=5, model_path='models/haarcascade_frontalface_default.xml'),
-        'MP Blazeface': MediaPipeBlazeFaceDetector(),
-        'MP Holistics': MediaPipeHolisticDetector(),
-        'MobileNetSSD': TensorFlowMobilNetSSDFaceDetector(),
-        'YOLOv8n': YOLOFaceDetector()
+    detectors = {}
+    failures = {}
+    detector_factories = {
+        'Haar Cascades': lambda: OpenCVHaarFaceDetector(scaleFactor=1.3, minNeighbors=5, model_path='models/haarcascade_frontalface_default.xml'),
+        'MP Blazeface': MediaPipeBlazeFaceDetector,
+        'MP Holistics': MediaPipeHolisticDetector,
+        'MobileNetSSD': TensorFlowMobilNetSSDFaceDetector,
+        'YOLOv8n': YOLOFaceDetector
     }
+
+    for name, factory in detector_factories.items():
+        try:
+            detectors[name] = factory()
+        except Exception as exc:
+            failures[name] = str(exc)
+
+    return detectors, failures
 
 @st.cache_data(show_spinner=False)
 def load_dataset(splits):
@@ -117,7 +133,16 @@ def main():
     st.title("Face Detection Model Benchmark")
     st.caption("Select one or more models to benchmark on the WIDER FACE validation split.")
 
-    detectors = initialize_detectors()
+    detectors, detector_failures = initialize_detectors()
+    if detector_failures:
+        st.sidebar.warning("Some detectors could not be initialized.")
+        with st.sidebar.expander("Details"):
+            for name, error in detector_failures.items():
+                st.write(f"{name}: {error}")
+
+    if not detectors:
+        st.error("No detectors are available. Check dependencies and model files, then restart the app.")
+        return
     model_options = list(detectors.keys())
 
     st.sidebar.header("Benchmark Settings")

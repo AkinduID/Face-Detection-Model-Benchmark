@@ -5,17 +5,19 @@
 # including the selection of evaluated models, evaluation metrics, and output formatting.
 
 import numpy as np
-import cv2
-import mediapipe as mp
 import os
-from ultralytics import YOLO
-import tensorflow as tf
 
 class OpenCVHaarFaceDetector():
     def __init__(self, scaleFactor=1.3, minNeighbors=5, model_path='models/haarcascade_frontalface_default.xml'):
+        try:
+            import cv2
+        except ImportError as exc:
+            raise ImportError("OpenCV is required for OpenCVHaarFaceDetector. Install opencv-python.") from exc
+
         if not os.path.exists(model_path):
             raise ValueError(f"Model file not found at {model_path}")
-        self.face_cascade = cv2.CascadeClassifier(model_path)
+        self.cv2 = cv2
+        self.face_cascade = self.cv2.CascadeClassifier(model_path)
         self.scaleFactor = scaleFactor
         self.minNeighbors = minNeighbors
         self.name="OpenCV Haar Cascade Face Detector"
@@ -23,20 +25,30 @@ class OpenCVHaarFaceDetector():
     def detect_face(self, image):
         if image is None:
             raise ValueError("Input image is None")
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        gray = self.cv2.cvtColor(image, self.cv2.COLOR_BGR2GRAY)
         faces = self.face_cascade.detectMultiScale(gray, self.scaleFactor, self.minNeighbors)
         faces_bbox = [[x, y, x + w, y + h] for x, y, w, h in faces]
         return np.array(faces_bbox)
 
 class MediaPipeBlazeFaceDetector():
     def __init__(self):
+        try:
+            import cv2
+        except ImportError as exc:
+            raise ImportError("OpenCV is required for MediaPipeBlazeFaceDetector. Install opencv-python.") from exc
+        try:
+            import mediapipe as mp
+        except ImportError as exc:
+            raise ImportError("MediaPipe is required for MediaPipeBlazeFaceDetector. Install mediapipe.") from exc
+
+        self.cv2 = cv2
         self.face_detector = mp.solutions.face_detection.FaceDetection(model_selection=1)
         self.name="MediaPipe BlazeFace Detector"
 
     def detect_face(self, image):
         if image is None:
             raise ValueError("Input image is None")
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = self.cv2.cvtColor(image, self.cv2.COLOR_BGR2RGB)
         results = self.face_detector.process(image)
         faces_bbox = []
         if results.detections:
@@ -51,12 +63,22 @@ class MediaPipeBlazeFaceDetector():
 
 class MediaPipeHolisticDetector():
     def __init__(self):
+        try:
+            import cv2
+        except ImportError as exc:
+            raise ImportError("OpenCV is required for MediaPipeHolisticDetector. Install opencv-python.") from exc
+        try:
+            import mediapipe as mp
+        except ImportError as exc:
+            raise ImportError("MediaPipe is required for MediaPipeHolisticDetector. Install mediapipe.") from exc
+
+        self.cv2 = cv2
         self.face_detector = mp.solutions.holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5)
         self.name = "MediaPipe Holistic Detector"
     def detect_face(self, image):
         if image is None:
             raise ValueError("Input image is None")
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image = self.cv2.cvtColor(image, self.cv2.COLOR_BGR2RGB)
         faces_bbox = []
         results = self.face_detector.process(image)
         if results.face_landmarks:
@@ -73,28 +95,39 @@ class TensorFlowMobilNetSSDFaceDetector():
     def __init__(self,
                  det_threshold=0.3,
                  model_path='models/ssd/frozen_inference_graph_face.pb'):
+        try:
+            import cv2
+        except ImportError as exc:
+            raise ImportError("OpenCV is required for TensorFlowMobilNetSSDFaceDetector. Install opencv-python.") from exc
+        try:
+            import tensorflow as tf
+        except ImportError as exc:
+            raise ImportError("TensorFlow is required for TensorFlowMobilNetSSDFaceDetector. Install tensorflow.") from exc
+
         self.det_threshold = det_threshold
-        self.detection_graph = tf.Graph()
+        self.cv2 = cv2
+        self.tf = tf
+        self.detection_graph = self.tf.Graph()
         self.name = "MobileNet SSD Face Detector"
 
         # Load the frozen graph
         with self.detection_graph.as_default():
-            od_graph_def = tf.compat.v1.GraphDef()
-            with tf.io.gfile.GFile(model_path, 'rb') as fid:
+            od_graph_def = self.tf.compat.v1.GraphDef()
+            with self.tf.io.gfile.GFile(model_path, 'rb') as fid:
                 serialized_graph = fid.read()
                 od_graph_def.ParseFromString(serialized_graph)
-                tf.import_graph_def(od_graph_def, name='')
+                self.tf.import_graph_def(od_graph_def, name='')
 
         # Create a session to run the graph
-        self.sess = tf.compat.v1.Session(graph=self.detection_graph)
+        self.sess = self.tf.compat.v1.Session(graph=self.detection_graph)
 
     def detect_face(self, image):
     # Convert the image to RGB
-        image_np = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image_np = self.cv2.cvtColor(image, self.cv2.COLOR_BGR2RGB)
 
         # Add batch dimension
-        input_tensor = tf.convert_to_tensor(image_np)
-        input_tensor = input_tensor[tf.newaxis, ...]  # Shape: (1, height, width, 3)
+        input_tensor = self.tf.convert_to_tensor(image_np)
+        input_tensor = input_tensor[self.tf.newaxis, ...]  # Shape: (1, height, width, 3)
 
         # Get input and output tensors
         tensor_input = self.detection_graph.get_tensor_by_name('image_tensor:0')
@@ -123,6 +156,11 @@ class TensorFlowMobilNetSSDFaceDetector():
 
 class YOLOFaceDetector():
     def __init__(self, model_path='models/yolov8n.pt', confidence_threshold=0.4):
+        try:
+            from ultralytics import YOLO
+        except ImportError as exc:
+            raise ImportError("Ultralytics is required for YOLOFaceDetector. Install ultralytics.") from exc
+
         if not os.path.exists(model_path):
             raise ValueError(f"Model file not found at {model_path}")
         self.model = YOLO(model_path)
