@@ -62,6 +62,13 @@ To evaluate the models, run the following command
 ```bash
 python main.py
 ```
+
+### Streamlit UI
+To launch the interactive benchmarking UI, run:
+```bash
+streamlit run src/app.py
+```
+Use the sidebar to select one or more models, set the IoU threshold, and track live benchmark progress with visual summaries.
 ## Results
 The results of the face detection model comparison are stored in the *results* folder. The key findings are summarized in the following comparison graphs generated using Matplotlib
 * Average IoU vs Model
