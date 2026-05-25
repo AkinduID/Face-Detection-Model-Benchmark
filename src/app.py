@@ -10,6 +10,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from face_detector import *
 from main import extract_and_filter_data, evaluate
 
+CHART_LABEL_ROTATION = 35
+
 # Initialize face detectors
 @st.cache_resource
 def initialize_detectors():
@@ -63,11 +65,11 @@ def render_comparison_charts(results):
     for title, metric in metrics.items():
         fig, ax = plt.subplots(figsize=(10, 5))
         values = [results[name][metric] for name in results.keys()]
-        ax.bar(list(results.keys()), values, color='#7db6d9')
+        ax.bar(results.keys(), values, color='#7db6d9')
         ax.set_xlabel('Models')
         ax.set_ylabel(title)
         ax.set_title(f'{title} Comparison')
-        plt.xticks(rotation=35, ha='right')
+        plt.xticks(rotation=CHART_LABEL_ROTATION, ha='right')
         plt.tight_layout()
         st.pyplot(fig)
         plt.close(fig)
