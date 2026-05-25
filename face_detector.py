@@ -163,7 +163,8 @@ class YOLOFaceDetector():
 
         if not os.path.exists(model_path):
             raise ValueError(f"Model file not found at {model_path}")
-        self.model = YOLO(model_path)
+        self.YOLO = YOLO
+        self.model = self.YOLO(model_path)
         self.confidence_threshold = confidence_threshold
         self.name = "YOLO Face Detector"
 
