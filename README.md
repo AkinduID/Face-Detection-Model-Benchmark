@@ -69,6 +69,7 @@ To launch the interactive benchmarking UI, run:
 streamlit run src/app.py
 ```
 Use the sidebar to select one or more models, set the IoU threshold, and track live benchmark progress with visual summaries.
+If you deploy on Streamlit Community Cloud, the included `runtime.txt` pins Python to a TensorFlow-compatible version.
 ## Results
 The results of the face detection model comparison are stored in the *results* folder. The key findings are summarized in the following comparison graphs generated using Matplotlib
 * Average IoU vs Model
