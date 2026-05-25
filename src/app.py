@@ -11,6 +11,7 @@ from face_detector import *
 from main import extract_and_filter_data, evaluate
 
 CHART_LABEL_ROTATION = 35
+CHART_LABEL_ALIGNMENT = 'right'
 
 # Initialize face detectors
 @st.cache_resource
@@ -69,7 +70,7 @@ def render_comparison_charts(results):
         ax.set_xlabel('Models')
         ax.set_ylabel(title)
         ax.set_title(f'{title} Comparison')
-        plt.xticks(rotation=CHART_LABEL_ROTATION, ha='right')
+        plt.xticks(rotation=CHART_LABEL_ROTATION, ha=CHART_LABEL_ALIGNMENT)
         plt.tight_layout()
         st.pyplot(fig)
         plt.close(fig)
@@ -94,7 +95,7 @@ def run_benchmark(selected_models, detectors, splits, iou_threshold):
         overall_status.text(f"Evaluating {model_name} ({idx + 1}/{total_models})")
 
         def progress_callback(current, total):
-            progress_value = current / total if total else 1
+            progress_value = current / total if total else 0
             model_progress.progress(progress_value)
             model_status.text(f"{model_name}: {current}/{total} images")
 
