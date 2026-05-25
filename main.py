@@ -73,7 +73,7 @@ def extract_and_filter_data(splits):
 
     return bb_gt_collection
 
-def evaluate(face_detector, bb_gt_collection, iou_threshold):
+def evaluate(face_detector, bb_gt_collection, iou_threshold, progress_callback=None):
     total_data = len(bb_gt_collection.keys())
     data_total_iou = 0
     data_total_precision = 0
@@ -84,10 +84,16 @@ def evaluate(face_detector, bb_gt_collection, iou_threshold):
     fn_count = 0
     tn_count = 0
 
-    for i, key in tqdm(enumerate(bb_gt_collection), total=total_data):
+    iterator = enumerate(bb_gt_collection)
+    if progress_callback is None:
+        iterator = tqdm(iterator, total=total_data)
+
+    for i, key in iterator:
         image_data = cv2.imread(key)
         if image_data is None:
             print(f'Error reading image {key}')
+            if progress_callback is not None:
+                progress_callback(i + 1, total_data)
             continue
         valid_image_count += 1 
         face_bbs_gt = np.array(bb_gt_collection[key])
@@ -148,6 +154,8 @@ def evaluate(face_detector, bb_gt_collection, iou_threshold):
         
         data_total_iou += image_average_iou
         data_total_precision += image_average_precision
+        if progress_callback is not None:
+            progress_callback(i + 1, total_data)
 
     result = {
         'average_iou': data_total_iou / valid_image_count if valid_image_count > 0 else 0,
